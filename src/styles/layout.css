@@ -1,0 +1,123 @@
+@layer components {
+  .page-layout {
+    --h: 3rem;
+
+    display: grid;
+    grid-template:
+      "h" var(--h)
+      "m" minmax(0, 1fr)
+      "f" min-content / minmax(0, 1fr);
+
+    @media (width >= 56rem) {
+      grid-template:
+        "h h" 3rem
+        "a m" minmax(0, 1fr)
+        "a f" min-content / 12rem minmax(0, 1fr);
+    }
+
+    & > header {
+      grid-area: h;
+    }
+    & > main {
+      grid-area: m;
+    }
+    & > aside {
+      @apply scrollbar-hidden 4xl:grid sticky top-(--h) hidden overflow-auto border-r;
+      height: calc(100dvh - var(--h));
+      grid-area: a;
+    }
+    & > footer {
+      grid-area: f;
+    }
+  }
+
+  .top-details {
+    @apply grid gap-y-2;
+
+    grid-template-areas:
+      "ttl"
+      "mtd"
+      "med"
+      "sco";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(3, min-content) 1fr;
+
+    @container details (min-width: 48rem) {
+      grid-template-areas:
+        "ttl ttl sco"
+        "mtd mtd mtd"
+        "med med med";
+      grid-template-columns: max-content minmax(0, 1fr);
+      grid-template-rows: repeat(2, min-content) minmax(16rem, 1fr);
+    }
+
+    & > .title {
+      grid-area: ttl;
+    }
+
+    & > .image {
+      grid-area: img;
+    }
+
+    & > .scores {
+      grid-area: sco;
+    }
+
+    & > .metadata {
+      grid-area: mtd;
+    }
+
+    & > .video {
+      grid-area: vid;
+    }
+
+    & > .media {
+      grid-area: med;
+    }
+  }
+
+  .identity-layout {
+    display: grid;
+
+    grid-template:
+      "p" min-content
+      "t" min-content
+      "l" min-content
+      "k" min-content
+      "b" minmax(10rem, 1fr) / minmax(0, 1fr);
+
+    @container star (width >= 36rem) {
+      grid-template:
+        "t t t" min-content
+        "p k k" min-content
+        "b b l" 1fr / min-content minmax(0, 1fr) 16rem;
+    }
+
+    @container star (width >= 48rem) {
+      grid-template:
+        "t t t" min-content
+        "p k l" min-content
+        "b b b" 1fr / min-content minmax(0, 1fr) minmax(14rem, 1fr);
+    }
+
+    & > .title {
+      grid-area: t;
+    }
+
+    & > .profile {
+      grid-area: p;
+    }
+
+    & > .life {
+      grid-area: l;
+    }
+
+    & > .known {
+      grid-area: k;
+    }
+
+    & > .bio {
+      grid-area: b;
+    }
+  }
+}

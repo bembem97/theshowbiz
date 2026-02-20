@@ -1,0 +1,8 @@
+@utility scrollbar-hidden {
+  scrollbar-width: none;
+  scrollbar-color: transparent;
+}
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--background);
+}

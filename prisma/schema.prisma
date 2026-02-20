@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MediaType {
+  MOVIE
+  TV
+}
+
+model Reaction {
+  id      String   @id @default(cuid())
+  helpful Boolean?
+
+  reviewId String
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([reviewId, userId])
+  @@map("reaction")
+}
+
+model Review {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  content   String
+  titleId   Int
+  mediaType MediaType
+
+  reaction Reaction[]
+
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
+
+  @@map("review")
+}
+
+model Profile {
+  id   String @id @default(cuid())
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId   String @unique // relation scalar field (used in the `@relation` attribute above)
+  username String @unique
+
+  review           Review[]
+  titleInteraction TitleInteraction[]
+
+  @@map("profile")
+}
+
+model TitleInteraction {
+  id               String    @id @default(cuid())
+  mediaType        MediaType
+  mediaTypeTitleId String // <media_type>_<titleId>
+  titleId          Int
+  title            String
+  year             Int?
+  pathname         String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // The call-to-actions
+  isWatchlist Boolean @default(false)
+  isFavorite  Boolean @default(false)
+  isWatched   Boolean @default(false)
+  rating      Int? // Nullable because a user might not have rated it yet
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id])
+
+  // Constraints
+  @@unique([userId, mediaTypeTitleId]) // Ensures a user can only have ONE entry per movie
+  @@map("titleInteraction")
+}
+
+/**
+ * * better-auth auto-generated models
+ */
+model User {
+  id            String   @id
+  name          String
+  email         String
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profile      Profile?
+  sessions     Session[]
+  accounts     Account[]
+  interactions TitleInteraction[]
+  reaction     Reaction[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}

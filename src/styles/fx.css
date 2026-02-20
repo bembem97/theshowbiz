@@ -1,0 +1,33 @@
+@layer components {
+  .scanlines {
+    @apply relative;
+
+    &::before {
+      @apply pointer-events-none absolute inset-0 z-50 size-full content-[''];
+      background: repeating-linear-gradient(
+        to bottom,
+        /* rgba(0, 255, 0, 0.05) 0px, rgba(0, 255, 0, 0.05) 1px, */
+          color-mix(in oklch, var(--color-slate-100) 7%, transparent),
+        color-mix(in oklch, var(--color-slate-100) 7%, transparent) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+    }
+  }
+}
+
+@utility flicker {
+  animation: flicker 0.35s infinite;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.94;
+  }
+  100% {
+    opacity: 1;
+  }
+}
