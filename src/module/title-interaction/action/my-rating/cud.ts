@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import { UpsertRatingProps } from "../../types/my-rating";
 import { updateTag } from "next/cache";
-import { Prisma } from "@/generated/prisma/client";
+// import { Prisma } from "@/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function setRating({
@@ -110,9 +110,9 @@ export async function setRating({
     console.error("Upsert Rating Error:", error);
 
     // Check if it's a known Prisma error
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      return { success: false, error: `Database error: ${error.code}` };
-    }
+    // if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    //   return { success: false, error: `Database error: ${error.code}` };
+    // }
 
     return { success: false, error: "An unexpected error occurred." };
   }
