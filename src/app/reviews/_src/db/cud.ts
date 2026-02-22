@@ -1,9 +1,16 @@
 "use server";
 
 import { MediaType } from "@/generated/prisma/enums";
-import prisma from "@/lib/prisma";
+import prisma, { Prisma } from "@/lib/prisma";
 import { CreateCommentInputProps, GetTitleAndTypeProps } from "../types";
 import { revalidatePath, updateTag } from "next/cache";
+import { extFetch } from "@/lib/fetch";
+import {
+  ApiMovieDetailsProps,
+  ApiTvDetailsProps,
+} from "@/app/(details)/_src/type/main-types";
+import { API_KEY, API_URL } from "@/lib/constant";
+import { getImagePathname, getPrettyDate } from "@/lib/utils";
 
 export async function createComment({
   content,
@@ -19,6 +26,10 @@ export async function createComment({
   }
 
   try {
+    const details = await extFetch<ApiMovieDetailsProps | ApiTvDetailsProps>(
+      `${API_URL}${mediaType}/${titleId}?language=en-US&api_key=${API_KEY}`,
+    );
+
     await prisma.review.create({
       data: {
         mediaType: MEDIA_TYPE,
@@ -27,6 +38,33 @@ export async function createComment({
         profile: {
           connect: {
             userId,
+          },
+        },
+        titleInteraction: {
+          connectOrCreate: {
+            create: {
+              mediaType: MEDIA_TYPE,
+              mediaTypeTitleId: `${mediaType}_${titleId}`,
+              title: "name" in details ? details.name : details.title,
+              titleId,
+              pathname: getImagePathname(details.poster_path),
+              year: Number(
+                getPrettyDate({
+                  date:
+                    "first_air_date" in details
+                      ? details.first_air_date
+                      : details.release_date,
+                  style: "year",
+                }),
+              ),
+              userId,
+            },
+            where: {
+              userId_mediaTypeTitleId: {
+                userId,
+                mediaTypeTitleId: `${mediaType}_${titleId}`,
+              },
+            },
           },
         },
       },
@@ -49,14 +87,51 @@ export async function deleteComment({
   mediaType,
   titleId,
 }: GetTitleAndTypeProps) {
-  try {
-    await prisma.review.delete({
-      where: {
-        id: commentId,
-      },
-    });
 
-    revalidatePath(`/reviews/${mediaType}/${titleId}`);
+  try {
+    await prisma.$transaction(async (tx) => {
+      try {
+        const review = await tx.review.findUnique({
+          where: { id: commentId },
+          include: { titleInteraction: true },
+        });
+
+        if (!review) return;
+
+        await tx.review.delete({
+          where: {
+            id: commentId,
+          },
+        });
+
+        const ti = review.titleInteraction;
+        if (!ti) {
+          revalidatePath(`/reviews/${mediaType}/${titleId}`);
+          return;
+        }
+
+        const hasOtherFlags =
+          ti.isWatchlist || ti.isFavorite || ti.isWatched || ti.rating !== null;
+
+        if (!hasOtherFlags) {
+          await tx.titleInteraction.delete({
+            where: { id: ti.id },
+          });
+        }
+
+        revalidatePath(`/reviews/${mediaType}/${titleId}`);
+
+        return { success: true };
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          return { success: false, error: `Database error: ${error.code}` };
+        } else if (error instanceof Error) {
+          return { success: false, message: `${error.name}: ${error.message}` };
+        } else {
+          return { success: false, message: "Unexpected Error" };
+        }
+      }
+    });
 
     return { success: true };
   } catch (error) {

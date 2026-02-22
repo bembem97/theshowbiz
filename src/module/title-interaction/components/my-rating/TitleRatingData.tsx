@@ -23,11 +23,20 @@ export default async function TitleRatingData({
     voteCount,
   });
 
+  const avgScr =
+    averageScore.success === true && averageScore.data
+      ? averageScore.data
+      : averageScore.code;
+  const totalVote =
+    userCount.success === true && userCount.data
+      ? userCount.data
+      : userCount.code;
+
   return (
     <div className="flex items-center gap-x-1">
       <MyRating mediaType={mediaType} titleId={titleId} />
-      <ScoreBadge value={averageScore} />
-      <VoteCountBadge value={userCount} />
+      <ScoreBadge value={avgScr} />
+      <VoteCountBadge value={totalVote} />
     </div>
   );
 }

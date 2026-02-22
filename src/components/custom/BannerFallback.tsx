@@ -1,9 +1,13 @@
-// import SpinnerProgress from "@/components/custom/SpinnerProgress";
+import { cn } from "@/lib/utils";
 
-export default function BannerFallback() {
+export default function BannerFallback({ className }: { className?: string }) {
   return (
-    <div className="grid h-44 grid-cols-1 grid-rows-1 border-b animate-pulse">
-      {/* <SpinnerProgress /> */}
+    <div
+      className={cn(
+        "grid h-44 animate-pulse grid-cols-1 grid-rows-1 border-b",
+        className,
+      )}
+    >
       <div className="bg-muted" />
     </div>
   );

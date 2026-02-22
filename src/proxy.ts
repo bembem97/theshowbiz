@@ -8,7 +8,7 @@ export async function proxy(request: NextRequest) {
   });
 
   const url = new URL(request.url);
-  const pathname = url.pathname;
+  const pathname = encodeURIComponent(url.pathname);
 
   // THIS IS NOT SECURE!
   // This is the recommended approach to optimistically redirect users
@@ -24,5 +24,5 @@ export async function proxy(request: NextRequest) {
 // export default function proxy(request: NextRequest) { ... }
 
 export const config = {
-  matcher: ["/favorites", "/ratings", "/watched", "/watchlist"],
+  matcher: ["/favorites", "/history", "/ratings", "/watched", "/watchlist"],
 };

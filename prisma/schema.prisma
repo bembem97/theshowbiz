@@ -39,7 +39,7 @@ model Review {
   id        String    @id @default(cuid())
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  content   String
+  content   String?
   titleId   Int
   mediaType MediaType
 
@@ -47,6 +47,10 @@ model Review {
 
   profileId String
   profile   Profile @relation(fields: [profileId], references: [id])
+
+  // ? =====================================
+  titleInteractionId String?
+  titleInteraction   TitleInteraction? @relation(fields: [titleInteractionId], references: [id])
 
   @@map("review")
 }
@@ -66,20 +70,25 @@ model Profile {
 
 model TitleInteraction {
   id               String    @id @default(cuid())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  //=====================================================
   mediaType        MediaType
   mediaTypeTitleId String // <media_type>_<titleId>
   titleId          Int
   title            String
   year             Int?
   pathname         String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  //=====================================================
 
   // The call-to-actions
   isWatchlist Boolean @default(false)
   isFavorite  Boolean @default(false)
   isWatched   Boolean @default(false)
   rating      Int? // Nullable because a user might not have rated it yet
+
+  // ? ==============================
+  review Review[]
 
   // Relations
   userId String

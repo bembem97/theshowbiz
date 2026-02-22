@@ -14,11 +14,7 @@ import { AuthSessionContext } from "../../context/AuthSession";
 import { RatedTitleDataContext } from "../../context/RatedTitleData";
 import SignInLink from "@/module/auth/SignInLink";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  // deleteRating,
-  // upsertRating,
-  setRating,
-} from "../../action/my-rating/cud";
+import { setRating } from "../../action/my-rating/cud";
 import {
   Dialog,
   DialogClose,
@@ -179,58 +175,6 @@ export function CreateRatingAction({
     </Button>
   );
 }
-
-// export function DeleteRatingAction({
-//   mediaType,
-//   myRate,
-//   titleId,
-// }: RatingActionProps) {
-//   const [isPending, startTransition] = React.useTransition();
-//   const [result, setResult] = React.useState<{
-//     disabled: boolean;
-//     label: string;
-//   }>({
-//     label: "Removie Rating",
-//     disabled: false,
-//   });
-//   const router = useRouter();
-//   const auth = use(AuthSessionContext);
-
-//   if (!auth || auth.session === null) return null;
-
-//   const { id: userId } = auth.user;
-
-//   function handleRating() {
-//     startTransition(async () => {
-//       const result = await deleteRating({
-//         userId,
-//         titleId,
-//         mediaType,
-//       });
-
-//       if (result.success) {
-//         setResult({ disabled: false, label: "Remove Rating" });
-//       } else {
-//         setResult({
-//           disabled: true,
-//           label: result.error || "An error has occured.",
-//         });
-//       }
-
-//       router.refresh();
-//     });
-//   }
-
-//   return (
-//     <Button
-//       disabled={isPending || !Boolean(myRate) || result.disabled}
-//       onClick={handleRating}
-//       variant="ghost"
-//     >
-//       {isPending ? <Spinner /> : result.label}
-//     </Button>
-//   );
-// }
 
 export function RatingDialog({
   label,

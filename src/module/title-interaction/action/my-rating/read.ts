@@ -1,5 +1,5 @@
 import { cacheTag } from "next/cache";
-import prisma from "@/lib/prisma";
+import prisma, { Prisma } from "@/lib/prisma";
 import { getNumberCompact } from "@/lib/utils";
 import { DeleteRatingProps, TitleRatingDataProps } from "../../types/my-rating";
 
@@ -35,35 +35,6 @@ export async function getUserRating({
   }
 }
 
-// export async function getTitleRatingData({
-//   mediaType,
-//   titleId,
-//   voteAverage,
-//   voteCount,
-// }: TitleRatingDataProps) {
-//   "use cache";
-//   cacheTag(`${mediaType}:${titleId}`);
-
-//   const calcRating = await prisma.titleInteraction.aggregate({
-//     _avg: { rating: true },
-//     _count: { rating: true },
-//     where: {
-//       mediaTypeTitleId: `${mediaType}_${titleId}`,
-//     },
-//   });
-
-//   const VOTE_AVERAGE = Number(voteAverage);
-
-//   const dbScoreAvg = calcRating._avg.rating;
-//   const calcAvg =
-//     dbScoreAvg && VOTE_AVERAGE
-//       ? ((VOTE_AVERAGE + dbScoreAvg) / 2).toFixed(1)
-//       : VOTE_AVERAGE;
-//   const calcCount = voteCount + calcRating._count.rating;
-
-//   return { scoreAverage: calcAvg, voteCount: getNumberCompact(calcCount) };
-// }
-
 export async function getTitleAverageScore({
   mediaType,
   titleId,
@@ -72,22 +43,43 @@ export async function getTitleAverageScore({
   "use cache";
   cacheTag(`${mediaType}:${titleId}`);
 
-  const calcRating = await prisma.titleInteraction.aggregate({
-    _avg: { rating: true },
-    where: {
-      mediaTypeTitleId: `${mediaType}_${titleId}`,
-    },
-  });
+  try {
+    const calcRating = await prisma.titleInteraction.aggregate({
+      _avg: { rating: true },
+      where: {
+        mediaTypeTitleId: `${mediaType}_${titleId}`,
+      },
+    });
 
-  const VOTE_AVERAGE = Number(voteAverage);
+    const VOTE_AVERAGE = Number(voteAverage);
 
-  const dbScoreAvg = calcRating._avg.rating;
-  const calcAvg =
-    dbScoreAvg && VOTE_AVERAGE
-      ? ((VOTE_AVERAGE + dbScoreAvg) / 2).toFixed(1)
-      : VOTE_AVERAGE;
+    const dbScoreAvg = calcRating._avg.rating;
+    const calcAvg =
+      dbScoreAvg && VOTE_AVERAGE
+        ? ((VOTE_AVERAGE + dbScoreAvg) / 2).toFixed(1)
+        : VOTE_AVERAGE;
 
-  return calcAvg;
+    return { success: true, data: calcAvg };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error(`Code: ${error.code}`, error.message);
+      return {
+        success: false,
+        code: error.code,
+      };
+    } else if (error instanceof Error) {
+      console.error(`Codename: ${error.name}`, error.message);
+      return {
+        success: false,
+        code: error.name,
+      };
+    } else {
+      console.error("An unexpected error has occured.");
+      return {
+        success: false,
+      };
+    }
+  }
 }
 
 export async function getTotalUserVote({
@@ -98,14 +90,35 @@ export async function getTotalUserVote({
   "use cache";
   cacheTag(`${mediaType}:${titleId}`);
 
-  const calcRating = await prisma.titleInteraction.aggregate({
-    _count: { rating: true },
-    where: {
-      mediaTypeTitleId: `${mediaType}_${titleId}`,
-    },
-  });
+  try {
+    const calcRating = await prisma.titleInteraction.aggregate({
+      _count: { rating: true },
+      where: {
+        mediaTypeTitleId: `${mediaType}_${titleId}`,
+      },
+    });
 
-  const calcCount = voteCount + calcRating._count.rating;
+    const calcCount = voteCount + calcRating._count.rating;
 
-  return getNumberCompact(calcCount);
+    return { success: true, data: getNumberCompact(calcCount) };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error(`Code: ${error.code}`, error.message);
+      return {
+        success: false,
+        code: error.code,
+      };
+    } else if (error instanceof Error) {
+      console.error(`Codename: ${error.name}`, error.message);
+      return {
+        success: false,
+        code: error.name,
+      };
+    } else {
+      console.error("An unexpected error has occured.");
+      return {
+        success: false,
+      };
+    }
+  }
 }

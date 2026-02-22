@@ -32,11 +32,14 @@ async function Score({
   titleId: number;
   voteAverage: string | number | null;
 }) {
-  const averageScore = await getTitleAverageScore({
+  const result = await getTitleAverageScore({
     titleId,
     mediaType,
     voteAverage: voteAverage?.toString() || "n/a",
   });
 
-  return <ScoreBadge value={averageScore} />;
+  const data =
+    result.success === true && result.data ? result.data : result.code;
+
+  return <ScoreBadge value={data} />;
 }

@@ -46,19 +46,11 @@ export default async function WatchedItems({ userId }: UserIdProps) {
   const watched = await getWatchedData({ userId });
 
   return (
-    <div>
-      <div className="scanlines border-b bg-slate-300 px-2 py-4 dark:bg-black">
-        <h1>Your Watch History</h1>
-        <h2 className="text-sm">
-          {
-            "Everything you've marked as watched, rated, reviewed, or checked into."
-          }
-        </h2>
-      </div>
+    <>
       <SavedTitles
         data={watched}
         emptyMessage="Looks like you don't have a watch history yet. To get started, mark a title as watched."
       />
-    </div>
+    </>
   );
 }
