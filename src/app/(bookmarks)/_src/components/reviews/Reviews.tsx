@@ -1,11 +1,11 @@
 import SpinnerProgress from "@/components/custom/SpinnerProgress";
 import React from "react";
-import HistorySession from "./HistorySession";
+import ReviewsSession from "./ReviewsSession";
 
-export default async function History() {
+export default async function Reviews() {
   return (
     <React.Suspense fallback={<SpinnerProgress />}>
-      <HistorySession />
+      <ReviewsSession />
     </React.Suspense>
   );
 }

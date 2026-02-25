@@ -42,7 +42,7 @@ async function getWatchlistData({ userId }: UserIdProps) {
 }
 
 export default async function WatchlistItems({ userId }: UserIdProps) {
-  cacheTag("/watchlist", "/ratings");
+  cacheTag("/ratings", "/watched", "/watchlist", "/favorites", "/reviews");
   const watchlist = await getWatchlistData({ userId });
 
   return (

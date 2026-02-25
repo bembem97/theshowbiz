@@ -17,8 +17,8 @@ export default function InterceptedMediaModal({
         showCloseButton={false}
         className="flex h-[calc(100dvh-0.5rem)] w-[calc(100vw-0.5rem)] max-w-full flex-col gap-y-2 bg-transparent p-0 ring-0 sm:max-w-screen"
       >
-        <ButtonBack className="ml-auto w-max shrink-0 grow-0">
-          <XIcon />
+        <ButtonBack className="ml-auto w-max shrink-0 grow-0 border-white hover:bg-white/15 hover:text-white">
+          <XIcon className="text-white" />
         </ButtonBack>
         <div
           className={cn(

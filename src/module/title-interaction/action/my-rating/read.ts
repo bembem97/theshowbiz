@@ -62,13 +62,24 @@ export async function getTitleAverageScore({
     return { success: true, data: calcAvg };
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.error(`Code: ${error.code}`, error.message);
+      if (error.code === "P1017") {
+        console.error(
+          `Code ${error.code}: `,
+          "Server has closed the connection.",
+        );
+      } else {
+        console.error(
+          `Code{${error.code}}`,
+          `:Name${error.name}`,
+          ` => ${error.message}`,
+        );
+      }
       return {
         success: false,
         code: error.code,
       };
     } else if (error instanceof Error) {
-      console.error(`Codename: ${error.name}`, error.message);
+      console.error(`Codename ${error.name}: `, error.message);
       return {
         success: false,
         code: error.name,

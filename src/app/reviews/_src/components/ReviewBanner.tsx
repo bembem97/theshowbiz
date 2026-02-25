@@ -33,7 +33,7 @@ export default async function ReviewBanner({
           className="4xl:w-52 aspect-2/3 w-32 shrink-0 grow-0 rounded-md border shadow-sm 2xl:w-40"
         />
 
-        <div className="flex flex-col items-center gap-y-1 2xl:items-start">
+        <div className="flex flex-col items-center gap-y-1 *:text-white 2xl:items-start">
           <h1>{title}</h1>
           <span className="typography-h4">{year}</span>
         </div>

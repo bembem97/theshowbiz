@@ -21,6 +21,7 @@ import {
 import { useRouter } from "next/navigation";
 import { GetTitleAndTypeProps } from "../types";
 import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 export function ThreadActionDropdown({
   commentId,
@@ -33,7 +34,7 @@ export function ThreadActionDropdown({
         <EllipsisVerticalIcon />
         <span className="sr-only">option menu</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="bg-background">
         <DeleteThreadComment
           commentId={commentId}
           mediaType={mediaType}
@@ -69,11 +70,13 @@ export function DeleteThreadComment({
 
           if (result.success) {
             setResult({ disabled: false, label: "Delete" });
+            toast("Comment", { description: "Your comment is deleted." });
           } else {
             setResult({
               disabled: true,
               label: result.message || "Something went wrong.",
             });
+            toast("Error", { description: result.message });
           }
 
           router.refresh();
@@ -90,6 +93,7 @@ export function DeleteThreadComment({
 export function IsHelpfulButton({
   reviewId,
   userId,
+
   ...props
 }: {
   reviewId: string;
@@ -105,10 +109,16 @@ export function IsHelpfulButton({
       size="icon"
       onClick={() =>
         startTransition(async () => {
-          await upHelpfulReaction({
+          const response = await upHelpfulReaction({
             reviewId,
             userId,
           });
+
+          if (!response) return;
+
+          if (response.success === false) {
+            toast("Error", { description: response.message });
+          }
         })
       }
     >
@@ -120,6 +130,7 @@ export function IsHelpfulButton({
 export function IsNotHelpfulButton({
   reviewId,
   userId,
+
   ...props
 }: {
   reviewId: string;
@@ -134,10 +145,15 @@ export function IsNotHelpfulButton({
       size="icon"
       onClick={() =>
         startTransition(async () => {
-          await downHelpfulReaction({
+          const response = await downHelpfulReaction({
             reviewId,
             userId,
           });
+          if (!response) return;
+
+          if (response.success === false) {
+            toast("Error", { description: response.message });
+          }
         })
       }
     >

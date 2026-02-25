@@ -27,7 +27,13 @@ export async function getReviews({
             userId: true,
           },
         },
-        reaction: { select: { helpful: true, userId: true } },
+        reaction: {
+          select: {
+            helpful: true,
+            profileId: true,
+            profile: { select: { userId: true } },
+          },
+        },
       },
     });
 
@@ -114,7 +120,7 @@ export async function getMyReaction({
   try {
     const myReaction = await prisma.reaction.findFirst({
       where: {
-        userId,
+        profile: { userId },
         reviewId,
         helpful: isHelpful,
       },

@@ -20,7 +20,11 @@ export function DateBadge({ value, className, ...props }: Props) {
   }
 
   return (
-    <Badge variant="ghost" className={cn("leading-none", className)} {...props}>
+    <Badge
+      variant="ghost"
+      className={cn("leading-none text-black dark:text-white", className)}
+      {...props}
+    >
       <CalendarIcon className="text-primary" />
       {value}
     </Badge>
@@ -36,14 +40,15 @@ export function VoteCountBadge({ value, className, ...props }: Props) {
     <Badge
       variant="ghost"
       aria-label={`${value} users voted`}
-      className={cn("inline-flex items-center leading-none", className)}
+      className={cn(
+        "inline-flex items-center leading-none text-black dark:text-white",
+        className,
+      )}
       {...props}
     >
       <SquareArrowUpIcon className="text-green-600 dark:text-green-400" />
-      <span className="text-xs leading-none text-black dark:text-white">
-        {value}
-      </span>
-      <span className="text-[0.625rem]">(Users)</span>
+      <span className="text-xs leading-none text-inherit">{value}</span>
+      <span className="text-[0.625rem] text-inherit">(Users)</span>
     </Badge>
   );
 }
@@ -56,10 +61,14 @@ export function ScoreBadge({ value, className, children, ...props }: Props) {
   return (
     <Badge
       variant="ghost"
-      className={cn("inline-flex items-center leading-none", className)}
+      className={cn(
+        "inline-flex items-center leading-none text-black dark:text-white",
+        className,
+      )}
       {...props}
     >
       <StarIcon className="text-yellow-600 dark:text-yellow-400" />
+
       {children && !value ? (
         children
       ) : (
@@ -80,7 +89,11 @@ export function TimeDurationBadge({ value, className, ...props }: Props) {
   }
 
   return (
-    <Badge variant="ghost" className={cn("leading-none", className)} {...props}>
+    <Badge
+      variant="ghost"
+      className={cn("leading-none text-black dark:text-white", className)}
+      {...props}
+    >
       <HourglassIcon className="text-primary" />
       {value}
     </Badge>
@@ -95,7 +108,10 @@ export function MediaTypeBadge({ value, className, ...props }: Props) {
   return (
     <Badge
       variant="ghost"
-      className={cn("leading-none capitalize", className)}
+      className={cn(
+        "leading-none text-black capitalize dark:text-white",
+        className,
+      )}
       {...props}
     >
       <FilmIcon className="text-primary" />
@@ -112,7 +128,10 @@ export function CertificationBadge({ value, className, ...props }: Props) {
   return (
     <Badge
       variant="ghost"
-      className={cn("leading-none tracking-wider capitalize", className)}
+      className={cn(
+        "leading-none tracking-wider text-black capitalize dark:text-white",
+        className,
+      )}
       {...props}
     >
       {value}
@@ -128,7 +147,10 @@ export function SeasonBadge({ value, className, ...props }: Props) {
   return (
     <Badge
       variant="ghost"
-      className={cn("leading-none capitalize", className)}
+      className={cn(
+        "leading-none text-black capitalize dark:text-white",
+        className,
+      )}
       {...props}
     >
       <TvIcon className="text-primary" />

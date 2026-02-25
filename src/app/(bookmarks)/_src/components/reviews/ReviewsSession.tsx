@@ -1,9 +1,9 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import HistoryItems from "./HistoryItems";
+import ReviewItems from "./ReviewItems";
 
-export default async function HistorySession() {
+export default async function ReviewsSession() {
   const cookies = await auth.api.getSession({
     headers: await headers(),
   });
@@ -14,5 +14,5 @@ export default async function HistorySession() {
 
   const { session } = cookies;
 
-  return <HistoryItems userId={session.userId} />;
+  return <ReviewItems userId={session.userId} />;
 }

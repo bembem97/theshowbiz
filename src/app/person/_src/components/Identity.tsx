@@ -23,7 +23,7 @@ export default function Identity({ identity, knownFor }: PersonIdentityProps) {
     lifetime: { birthPlace, birthdate, deceased },
     knownForDept,
     bio,
-    id
+    id,
   } = identity;
   return (
     <div className="identity-layout gap-x-2 gap-y-4 border-b p-2">
@@ -60,19 +60,22 @@ export default function Identity({ identity, knownFor }: PersonIdentityProps) {
         </DescriptionList>
       </div>
 
-      <div role="group" className="group profile relative isolate justify-self-center @xl/star:justify-self-start">
+      <div
+        role="group"
+        className="group profile relative isolate justify-self-center @xl/star:justify-self-start"
+      >
         <ImageLink
           alt={name}
           src={profile.src}
           href={profile.href}
           className="aspect-2/3 w-60 @md/star:w-40 @xl/star:w-48 @4xl/star:w-56"
         />
-        <Button 
-          nativeButton={false} 
+        <Button
+          nativeButton={false}
           variant="secondary"
-          className="bottom-4 w-max right-2 z-10 absolute hover:bg-black"
+          className="absolute right-2 bottom-4 z-10 w-max"
           render={<Link href={`/person/${id}/photos`} />}
-         >
+        >
           Photos
           <PlusIcon />
         </Button>

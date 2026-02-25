@@ -42,7 +42,7 @@ async function getRatingsData({ userId }: UserIdProps) {
 }
 
 export default async function RatingItems({ userId }: UserIdProps) {
-  cacheTag("/ratings", "/watched", "/watchlist", "/favorites");
+  cacheTag("/ratings", "/watched", "/watchlist", "/favorites", "/reviews");
 
   const ratingItems = await getRatingsData({ userId });
 

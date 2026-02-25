@@ -22,16 +22,21 @@ enum MediaType {
 }
 
 model Reaction {
-  id      String   @id @default(cuid())
-  helpful Boolean?
+  id        String   @id @default(cuid())
+  helpful   Boolean?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   reviewId String
   review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  // userId String
+  // user   User   @relation(fields: [userId], references: [id])
 
-  @@unique([reviewId, userId])
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
+
+  @@unique([reviewId, profileId])
   @@map("reaction")
 }
 
@@ -64,6 +69,7 @@ model Profile {
 
   review           Review[]
   titleInteraction TitleInteraction[]
+  reaction         Reaction[]
 
   @@map("profile")
 }
@@ -94,8 +100,8 @@ model TitleInteraction {
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  profileId String?
-  profile   Profile? @relation(fields: [profileId], references: [id])
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
 
   // Constraints
   @@unique([userId, mediaTypeTitleId]) // Ensures a user can only have ONE entry per movie
@@ -118,7 +124,6 @@ model User {
   sessions     Session[]
   accounts     Account[]
   interactions TitleInteraction[]
-  reaction     Reaction[]
 
   @@unique([email])
   @@map("user")

@@ -21,10 +21,20 @@ export async function setRating({
     return { success: false, error: "Rating cannot be null or zero." };
   }
 
-  try {
-    await prisma.$transaction(
-      async () => {
-        const isActive = await prisma.titleInteraction.findUnique({
+  await prisma.$transaction(
+    async (tx) => {
+      try {
+        const isExistProfile = await tx.profile.findUnique({
+          where: {
+            userId,
+          },
+        });
+
+        if (!isExistProfile) {
+          return { success: false, error: "No profile" };
+        }
+
+        const isActive = await tx.titleInteraction.findUnique({
           where: {
             userId_mediaTypeTitleId: {
               userId,
@@ -53,7 +63,7 @@ export async function setRating({
           !interaction.isActiveWatchlist &&
           interaction.isRated
         ) {
-          const res = await prisma.titleInteraction.delete({
+          const res = await tx.titleInteraction.delete({
             where: {
               userId_mediaTypeTitleId: {
                 userId,
@@ -67,7 +77,7 @@ export async function setRating({
 
           return res;
         } else {
-          const res = await prisma.titleInteraction.upsert({
+          const res = await tx.titleInteraction.upsert({
             where: {
               userId_mediaTypeTitleId: {
                 userId,
@@ -86,6 +96,7 @@ export async function setRating({
               title,
               year: Number(year) || null,
               pathname: posterPath,
+              profileId: isExistProfile.id,
             },
             select: {
               rating: true,
@@ -97,22 +108,26 @@ export async function setRating({
           revalidatePath("/favorites");
           revalidatePath("/watched");
           revalidatePath("/watchlist");
+          revalidatePath("/reviews");
 
           return res;
         }
-      },
-      { timeout: 10_000 },
-    );
+      } catch (error) {
+        console.error("Upsert Rating Error:", error);
 
-    return { success: true };
-  } catch (error) {
-    console.error("Upsert Rating Error:", error);
+        //! Check if it's a known Prisma error
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          return { success: false, error: `Database error: ${error.code}` };
+        }
 
-    //! Check if it's a known Prisma error
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      return { success: false, error: `Database error: ${error.code}` };
-    }
+        return { success: false, error: "An unexpected error occurred." };
+      }
+    },
+    {
+      maxWait: 5000, // default is 2 seconds
+      timeout: 30000, // default is 5 seconds
+    },
+  );
 
-    return { success: false, error: "An unexpected error occurred." };
-  }
+  return { success: true };
 }

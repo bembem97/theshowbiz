@@ -23,9 +23,8 @@ export function TitleDetailsPoster({
       />
       <figcaption className="mt-1 space-y-1.5 px-1">
         <p className="line-clamp-1 text-xs md:text-sm">{title}</p>
-        <div className="flex items-center gap-x-2 *:px-0.5">
+        <div className="flex items-center gap-x-1 *:px-0">
           <DateBadge value={year} />
-          {/* <ScoreBadge value={rating} /> */}
           <DynamicScore
             mediaType={media_type}
             titleId={id}

@@ -33,21 +33,18 @@ export default function SeasonInfo({ data, className, ...props }: Props) {
     >
       <ItemContent className="divide-y *:[div]:py-2.5">
         <div className="flex items-center justify-between px-3">
-          <span className="typography-h4 text-white">{name}</span>
+          <span className="typography-h4 text-foreground dark:text-white">{name}</span>
           <ScoreBadge value={vote_average} />
         </div>
 
         <div className="flex items-center justify-between">
           <DateBadge value={air_date} />
           <SeasonBadge value={`Season ${season_number}`} />
-          <SeasonBadge
-            value={EPISODE}
-            className="*:[svg]:text-secondary-foreground"
-          />
+          <SeasonBadge value={EPISODE} />
         </div>
 
         <div className="px-3">
-          <p className="text-xs text-white">{overview}</p>
+          <p className="text-xs text-foreground dark:text-white">{overview}</p>
         </div>
       </ItemContent>
     </Item>

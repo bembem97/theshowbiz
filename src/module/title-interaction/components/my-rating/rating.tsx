@@ -27,11 +27,6 @@ export default function Rating({
       <RatingButtons defaultValue={value || null} setChange={setValue} />
 
       <div className="grid w-full grid-cols-1 gap-x-2">
-        {/* <DeleteRatingAction
-          mediaType={mediaType}
-          myRate={defaultValue}
-          titleId={titleId}
-        /> */}
         <CreateRatingAction
           mediaType={mediaType}
           myRate={value || null}

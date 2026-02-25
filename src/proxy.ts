@@ -24,5 +24,5 @@ export async function proxy(request: NextRequest) {
 // export default function proxy(request: NextRequest) { ... }
 
 export const config = {
-  matcher: ["/favorites", "/history", "/ratings", "/watched", "/watchlist"],
+  matcher: ["/favorites", "/reviews", "/ratings", "/watched", "/watchlist"],
 };

@@ -56,7 +56,9 @@ export default async function UserReviews({
             });
 
             const isActiveReaction = () => {
-              return reaction.find(({ userId }) => userId === sessionUserId);
+              return reaction.find(
+                ({ profile: { userId } }) => userId === sessionUserId,
+              );
             };
 
             return (
@@ -88,6 +90,9 @@ export default async function UserReviews({
                 <ItemFooter className="space-between h-11.25 border-t p-2">
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-x-1">
+                      {/*
+                       * //*  Upvote Button
+                       */}
                       <IsHelpfulButton
                         reviewId={id}
                         userId={sessionUserId}
@@ -100,6 +105,9 @@ export default async function UserReviews({
                     </div>
 
                     <div className="flex items-center gap-x-1">
+                      {/*
+                       * //*  Downvote Button
+                       */}
                       <IsNotHelpfulButton
                         reviewId={id}
                         userId={sessionUserId}

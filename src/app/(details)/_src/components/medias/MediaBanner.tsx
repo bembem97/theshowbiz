@@ -21,7 +21,7 @@ export default async function MediaBanner({
   const { backdrop_path, title } = await getTitleDetailsAPI({
     titleId,
     media_type,
-    gallery_type
+    gallery_type,
   });
 
   return (
@@ -31,11 +31,9 @@ export default async function MediaBanner({
         src={backdrop_path}
         className="-z-10 brightness-50"
       />
-      <ButtonBack />
-      <h1>{title}</h1>
-      <h2 className="text-muted-foreground typography-span text-xs">
-        {subtext}
-      </h2>
+      <ButtonBack className="border-white text-white hover:bg-white/15 hover:text-white" />
+      <h1 className="text-white">{title}</h1>
+      <h2 className="typography-span text-xs text-white">{subtext}</h2>
     </div>
   );
 }

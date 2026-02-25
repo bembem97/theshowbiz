@@ -25,61 +25,83 @@ export async function createComment({
     userId = cookies.session.userId;
   }
 
-  try {
-    const details = await extFetch<ApiMovieDetailsProps | ApiTvDetailsProps>(
-      `${API_URL}${mediaType}/${titleId}?language=en-US&api_key=${API_KEY}`,
-    );
+  const details = await extFetch<ApiMovieDetailsProps | ApiTvDetailsProps>(
+    `${API_URL}${mediaType}/${titleId}?language=en-US&api_key=${API_KEY}`,
+  );
 
-    await prisma.review.create({
-      data: {
-        mediaType: MEDIA_TYPE,
-        content,
-        titleId,
-        profile: {
-          connect: {
+  return await prisma.$transaction(
+    async (tx) => {
+      try {
+        const isExistProfile = await tx.profile.findUnique({
+          where: {
             userId,
           },
-        },
-        titleInteraction: {
-          connectOrCreate: {
-            create: {
-              mediaType: MEDIA_TYPE,
-              mediaTypeTitleId: `${mediaType}_${titleId}`,
-              title: "name" in details ? details.name : details.title,
-              titleId,
-              pathname: getImagePathname(details.poster_path),
-              year: Number(
-                getPrettyDate({
-                  date:
-                    "first_air_date" in details
-                      ? details.first_air_date
-                      : details.release_date,
-                  style: "year",
-                }),
-              ),
-              userId,
-            },
-            where: {
-              userId_mediaTypeTitleId: {
+        });
+
+        if (!isExistProfile) {
+          return { success: false, error: "No profile" };
+        }
+
+        await tx.review.create({
+          data: {
+            mediaType: MEDIA_TYPE,
+            content,
+            titleId,
+            profile: {
+              connect: {
                 userId,
-                mediaTypeTitleId: `${mediaType}_${titleId}`,
+              },
+            },
+            titleInteraction: {
+              connectOrCreate: {
+                create: {
+                  mediaType: MEDIA_TYPE,
+                  mediaTypeTitleId: `${mediaType}_${titleId}`,
+                  title: "name" in details ? details.name : details.title,
+                  titleId,
+                  pathname: getImagePathname(details.poster_path),
+                  year: Number(
+                    getPrettyDate({
+                      date:
+                        "first_air_date" in details
+                          ? details.first_air_date
+                          : details.release_date,
+                      style: "year",
+                    }),
+                  ),
+                  userId,
+                  profileId: isExistProfile.id,
+                },
+                where: {
+                  userId_mediaTypeTitleId: {
+                    userId,
+                    mediaTypeTitleId: `${mediaType}_${titleId}`,
+                  },
+                },
               },
             },
           },
-        },
-      },
-    });
+        });
 
-    revalidatePath(`/reviews/${mediaType}/${titleId}`);
+        revalidatePath(`/reviews/${mediaType}/${titleId}`);
+        revalidatePath("/reviews");
 
-    return { success: true };
-  } catch (error) {
-    if (error instanceof Error) {
-      return { success: false, message: `${error.name}: ${error.message}` };
-    } else {
-      return { success: false, message: "Unexpected Error" };
-    }
-  }
+        return { success: true };
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          return { success: false, message: `Database error: ${error.code}` };
+        } else if (error instanceof Error) {
+          return { success: false, message: `${error.name}: ${error.message}` };
+        } else {
+          return { success: false, message: "Unexpected Error" };
+        }
+      }
+    },
+    {
+      maxWait: 5000, // default is 2 seconds
+      timeout: 30000, // default is 5 seconds
+    },
+  );
 }
 
 export async function deleteComment({
@@ -87,16 +109,15 @@ export async function deleteComment({
   mediaType,
   titleId,
 }: GetTitleAndTypeProps) {
-
-  try {
-    await prisma.$transaction(async (tx) => {
+  return await prisma.$transaction(
+    async (tx) => {
       try {
         const review = await tx.review.findUnique({
           where: { id: commentId },
           include: { titleInteraction: true },
         });
 
-        if (!review) return;
+        if (!review) return { success: false, message: "" };
 
         await tx.review.delete({
           where: {
@@ -105,9 +126,11 @@ export async function deleteComment({
         });
 
         const ti = review.titleInteraction;
+
         if (!ti) {
           revalidatePath(`/reviews/${mediaType}/${titleId}`);
-          return;
+          revalidatePath("/reviews");
+          return { success: true, message: "" };
         }
 
         const hasOtherFlags =
@@ -120,27 +143,23 @@ export async function deleteComment({
         }
 
         revalidatePath(`/reviews/${mediaType}/${titleId}`);
-
-        return { success: true };
+        revalidatePath("/reviews");
+        return { success: true, message: "" };
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          return { success: false, error: `Database error: ${error.code}` };
+          return { success: false, message: `Database error: ${error.code}` };
         } else if (error instanceof Error) {
           return { success: false, message: `${error.name}: ${error.message}` };
         } else {
           return { success: false, message: "Unexpected Error" };
         }
       }
-    });
-
-    return { success: true };
-  } catch (error) {
-    if (error instanceof Error) {
-      return { success: false, message: `${error.name}: ${error.message}` };
-    } else {
-      return { success: false, message: "Unexpected Error" };
-    }
-  }
+    },
+    {
+      maxWait: 5000, // default is 2 seconds
+      timeout: 30000, // default is 5 seconds
+    },
+  );
 }
 
 export async function upHelpfulReaction({
@@ -152,61 +171,94 @@ export async function upHelpfulReaction({
 }) {
   if (!userId) return;
 
-  try {
-    await prisma.$transaction(async () => {
-      const hasReacted = await prisma.reaction.findFirst({
-        where: {
-          reviewId,
-          userId,
-        },
-        select: {
-          helpful: true,
-          id: true,
-          userId: true,
-        },
-      });
-
-      if (
-        hasReacted !== null &&
-        hasReacted.helpful === true &&
-        userId === hasReacted.userId
-      ) {
-        await prisma.reaction.delete({
+  return await prisma.$transaction(
+    async (tx) => {
+      try {
+        const isExistProfile = await tx.profile.findUnique({
           where: {
-            id: hasReacted.id,
             userId,
           },
         });
-        updateTag(`review:${reviewId}`);
-        return;
-      }
 
-      await prisma.reaction.upsert({
-        where: {
-          id: hasReacted?.id || "",
-          userId,
-          reviewId,
-        },
-        update: {
-          helpful: true,
-        },
-        create: {
-          helpful: true,
-          userId,
-          reviewId,
-        },
-      });
-      updateTag(`review:${reviewId}`);
-      return;
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      return { success: false, message: `${error.name}: ${error.message}` };
-    } else {
-      return { success: false, message: "Unexpected Error" };
-    }
-  }
+        if (!isExistProfile) {
+          return { success: false, error: "No profile" };
+        }
+
+        const hasReacted = await tx.reaction.findFirst({
+          where: {
+            reviewId,
+            profile: {
+              userId,
+            },
+          },
+          select: {
+            helpful: true,
+            id: true,
+            profile: { select: { userId: true } },
+          },
+        });
+
+        if (
+          hasReacted !== null &&
+          hasReacted.helpful === true &&
+          userId === hasReacted.profile.userId
+        ) {
+          await tx.reaction.delete({
+            where: {
+              id: hasReacted.id,
+              profile: { userId },
+            },
+          });
+          updateTag(`review:${reviewId}`);
+          revalidatePath(`/reviews`);
+          return { success: true, message: "" };
+        }
+
+        await tx.reaction.upsert({
+          where: {
+            id: hasReacted?.id || "",
+            profile: { userId },
+            reviewId,
+          },
+          update: {
+            helpful: true,
+          },
+          create: {
+            helpful: true,
+            profileId: isExistProfile.id,
+            reviewId,
+          },
+        });
+
+        updateTag(`review:${reviewId}`);
+        revalidatePath(`/reviews`);
+        return { success: true, message: "" };
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error(`Code ${error.code}: ${error.message}`);
+
+          return {
+            success: false,
+            message: `Code ${error.code}`,
+          };
+        } else if (error instanceof Error) {
+          console.error(`Code ${error.name}: ${error.message}`);
+          return {
+            success: false,
+            message: `Code ${error.name}`,
+          };
+        } else {
+          return { success: false, message: "Unexpected Error" };
+        }
+      }
+    },
+    {
+      maxWait: 5000, // default is 2 seconds
+      timeout: 30000, // default is 5 seconds
+    },
+  );
 }
+
 export async function downHelpfulReaction({
   reviewId,
   userId,
@@ -216,58 +268,88 @@ export async function downHelpfulReaction({
 }) {
   if (!userId) return;
 
-  try {
-    await prisma.$transaction(async () => {
-      const hasReacted = await prisma.reaction.findFirst({
-        where: {
-          reviewId,
-          userId,
-        },
-        select: {
-          helpful: true,
-          id: true,
-          userId: true,
-        },
-      });
-
-      if (
-        hasReacted !== null &&
-        hasReacted.helpful === false &&
-        userId === hasReacted.userId
-      ) {
-        await prisma.reaction.delete({
+  return await prisma.$transaction(
+    async (tx) => {
+      try {
+        const isExistProfile = await tx.profile.findUnique({
           where: {
-            id: hasReacted.id,
             userId,
           },
         });
-        updateTag(`review:${reviewId}`);
-        return;
-      }
 
-      await prisma.reaction.upsert({
-        where: {
-          id: hasReacted?.id || "",
-          userId,
-          reviewId,
-        },
-        update: {
-          helpful: false,
-        },
-        create: {
-          helpful: false,
-          userId,
-          reviewId,
-        },
-      });
-      updateTag(`review:${reviewId}`);
-      return;
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      return { success: false, message: `${error.name}: ${error.message}` };
-    } else {
-      return { success: false, message: "Unexpected Error" };
-    }
-  }
+        if (!isExistProfile) {
+          return { success: false, error: "No profile" };
+        }
+
+        const hasReacted = await tx.reaction.findFirst({
+          where: {
+            reviewId,
+            profileId: isExistProfile.id,
+          },
+          select: {
+            helpful: true,
+            id: true,
+            profile: { select: { userId: true } },
+          },
+        });
+
+        if (
+          hasReacted !== null &&
+          hasReacted.helpful === false &&
+          userId === hasReacted.profile.userId
+        ) {
+          await tx.reaction.delete({
+            where: {
+              id: hasReacted.id,
+              profileId: isExistProfile.id,
+            },
+          });
+          updateTag(`review:${reviewId}`);
+          revalidatePath("/reviews");
+          return { success: true, message: "" };
+        }
+
+        await tx.reaction.upsert({
+          where: {
+            id: hasReacted?.id || "",
+            profileId: isExistProfile.id,
+            reviewId,
+          },
+          update: {
+            helpful: false,
+          },
+          create: {
+            helpful: false,
+            profileId: isExistProfile.id,
+            reviewId,
+          },
+        });
+
+        updateTag(`review:${reviewId}`);
+        revalidatePath("/reviews");
+        return { success: true, message: "" };
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error(`Code ${error.code}: ${error.message}`);
+
+          return {
+            success: false,
+            message: `Code ${error.code}`,
+          };
+        } else if (error instanceof Error) {
+          console.error(`Code ${error.name}: ${error.message}`);
+          return {
+            success: false,
+            message: `Code ${error.name}`,
+          };
+        } else {
+          return { success: false, message: "Unexpected Error" };
+        }
+      }
+    },
+    {
+      maxWait: 5000, // default is 2 seconds
+      timeout: 30000, // default is 5 seconds
+    },
+  );
 }

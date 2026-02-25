@@ -72,12 +72,12 @@ export default async function MainDetails({
               <Item
                 variant="outline"
                 className={cn(
-                  "pointer-events-none absolute top-1/2 left-1/2 z-10 size-max -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/50",
+                  "pointer-events-none absolute top-1/2 left-1/2 z-10 size-max -translate-x-1/2 -translate-y-1/2 rounded-full backdrop-blur-xs",
                   { hidden: !trailer || Object.keys(trailer).length === 0 },
                 )}
               >
                 <ItemActions>
-                  <PlayIcon className="size-9" />
+                  <PlayIcon className="size-9 text-border" />
                 </ItemActions>
                 <ItemDescription className="sr-only">
                   play trailer
@@ -128,25 +128,6 @@ export default async function MainDetails({
         </div>
 
         <div className="scoring flex flex-wrap items-center justify-center gap-1 py-4 @xl/details:justify-start @3xl/details:justify-end @3xl/details:py-0">
-          {/* <React.Suspense
-            fallback={
-              <Button variant="ghost" disabled>
-                <StarsIcon className="text-primary" />
-                Rate Now
-              </Button>
-            }
-          >
-            <TitleRatingProvider
-              titleData={{
-                title,
-                year: getPrettyDate({ date: poster_path, style: "year" }),
-                posterPath: getImagePathname(poster_path),
-              }}
-            >
-              <MyRating mediaType={media_type} titleId={id} />
-            </TitleRatingProvider>
-          </React.Suspense> */}
-
           <TitleRating
             mediaType={media_type}
             titleId={id}
@@ -199,27 +180,6 @@ export default async function MainDetails({
             title={title}
             date={date}
           />
-          {/* <Watchlist
-            mediaType={media_type}
-            pathname={poster_path}
-            titleId={id}
-            title={title}
-            date={date}
-          />
-          <Watched
-            mediaType={media_type}
-            pathname={poster_path}
-            titleId={id}
-            title={title}
-            date={date}
-          />
-          <Favorite
-            mediaType={media_type}
-            pathname={poster_path}
-            titleId={id}
-            title={title}
-            date={date}
-          /> */}
         </div>
       </div>
     </header>

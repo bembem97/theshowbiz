@@ -63,7 +63,7 @@ export function RatingButtons({
                 "size-5 transition-transform group-hover:scale-135",
                 index <= (onHover! || ratingValue!)
                   ? "fill-amber-400 stroke-amber-400 dark:fill-amber-600 dark:stroke-amber-600"
-                  : "stroke-muted fill-muted",
+                  : "dark:fill-muted dark:stroke-muted fill-black/50 stroke-black/50",
               )}
             />
           </Button>
@@ -83,13 +83,13 @@ export function RatingScore({ className, score, ...props }: RatingScoreProps) {
       {...props}
     >
       {score ? (
-        <span className="typography-h4 inline-flex items-center gap-x-1 text-white">
+        <span className="typography-h4 inline-flex items-center gap-x-1 text-black dark:text-white">
           <StarsIcon className="fill-amber-600 stroke-amber-600 dark:fill-amber-400 dark:stroke-amber-400" />
           {score}
         </span>
       ) : (
-        <span className="typography-h4 inline-flex items-center gap-x-1 text-white">
-          <StarsIcon className="fill-foreground" />
+        <span className="typography-h4 inline-flex items-center gap-x-1 text-black dark:text-white">
+          <StarsIcon className="text-primary" />
           Rate it
         </span>
       )}
@@ -162,6 +162,8 @@ export function CreateRatingAction({
 
   return (
     <Button
+      className="not-dark:bg-foreground/85 not-dark:hover:bg-foreground not-dark:text-background"
+      size="lg"
       disabled={
         isPending ||
         result.disabled ||

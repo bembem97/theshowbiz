@@ -42,7 +42,7 @@ async function getFavoriteData({ userId }: UserIdProps) {
 }
 
 export default async function FavoriteItems({ userId }: UserIdProps) {
-  cacheTag("/favorite", "/ratings");
+  cacheTag("/ratings", "/watched", "/watchlist", "/favorites", "/reviews");
   const favorite = await getFavoriteData({ userId });
 
   return (

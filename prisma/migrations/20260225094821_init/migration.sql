@@ -5,8 +5,10 @@ CREATE TYPE "MediaType" AS ENUM ('MOVIE', 'TV');
 CREATE TABLE "reaction" (
     "id" TEXT NOT NULL,
     "helpful" BOOLEAN,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "reviewId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "profileId" TEXT NOT NULL,
 
     CONSTRAINT "reaction_pkey" PRIMARY KEY ("id")
 );
@@ -16,10 +18,11 @@ CREATE TABLE "review" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "content" TEXT NOT NULL,
+    "content" TEXT,
     "titleId" INTEGER NOT NULL,
     "mediaType" "MediaType" NOT NULL,
     "profileId" TEXT NOT NULL,
+    "titleInteractionId" TEXT,
 
     CONSTRAINT "review_pkey" PRIMARY KEY ("id")
 );
@@ -36,14 +39,14 @@ CREATE TABLE "profile" (
 -- CreateTable
 CREATE TABLE "titleInteraction" (
     "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "mediaType" "MediaType" NOT NULL,
     "mediaTypeTitleId" TEXT NOT NULL,
     "titleId" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
     "year" INTEGER,
     "pathname" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
     "isWatchlist" BOOLEAN NOT NULL DEFAULT false,
     "isFavorite" BOOLEAN NOT NULL DEFAULT false,
     "isWatched" BOOLEAN NOT NULL DEFAULT false,
@@ -113,13 +116,7 @@ CREATE TABLE "verification" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "reaction_reviewId_key" ON "reaction"("reviewId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "reaction_userId_key" ON "reaction"("userId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "reaction_reviewId_userId_key" ON "reaction"("reviewId", "userId");
+CREATE UNIQUE INDEX "reaction_reviewId_profileId_key" ON "reaction"("reviewId", "profileId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "profile_userId_key" ON "profile"("userId");
@@ -149,10 +146,13 @@ CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
 ALTER TABLE "reaction" ADD CONSTRAINT "reaction_reviewId_fkey" FOREIGN KEY ("reviewId") REFERENCES "review"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "reaction" ADD CONSTRAINT "reaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reaction" ADD CONSTRAINT "reaction_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "profile"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "review" ADD CONSTRAINT "review_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES "profile"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "review" ADD CONSTRAINT "review_titleInteractionId_fkey" FOREIGN KEY ("titleInteractionId") REFERENCES "titleInteraction"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "profile" ADD CONSTRAINT "profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;

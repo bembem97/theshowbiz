@@ -11,7 +11,7 @@ import {
   HeartIcon,
   StarIcon,
   LucideProps,
-  HistoryIcon,
+  MessageSquareDotIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { Route } from "next";
@@ -74,9 +74,9 @@ export const navList: NavListProps = {
       label: "Watched",
     },
     {
-      href: "/history",
-      Icon: HistoryIcon,
-      label: "History",
+      href: "/reviews",
+      Icon: MessageSquareDotIcon,
+      label: "Reviews",
     },
   ],
 };
