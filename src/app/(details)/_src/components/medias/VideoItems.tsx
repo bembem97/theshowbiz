@@ -24,6 +24,10 @@ export default async function VideoItems({
 
   const thumbnails = images as VideoCollectionProps[];
 
+  if (thumbnails.length === 0) {
+    return <p>{"No available video."}</p>;
+  }
+
   return (
     <ImageGrid>
       {thumbnails.map(({ href, thumbnail }, i) => (

@@ -58,7 +58,9 @@ export default async function MainDetails({
             <ImageLink
               alt={title}
               src={poster_path}
-              href={`/${media_type}/${id}/imageviewer${pathname}` as Route}
+              href={
+                `/${media_type}/${id}/${pathname ? `imageviewer${pathname}` : "images"}` as Route
+              }
               className="aspect-2/3 h-full shrink-0 grow-0"
             />
             <div className="relative isolate grid aspect-2/3 h-full shrink grow">
@@ -77,7 +79,7 @@ export default async function MainDetails({
                 )}
               >
                 <ItemActions>
-                  <PlayIcon className="size-9 text-border" />
+                  <PlayIcon className="text-border size-9" />
                 </ItemActions>
                 <ItemDescription className="sr-only">
                   play trailer

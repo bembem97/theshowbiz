@@ -22,7 +22,11 @@ export default async function ImageItems({
 
   return (
     <>
-      <ImageTabslist data={images as PhotoProps[]} />
+      {images.length === 0 ? (
+        <p>{"No available image."}</p>
+      ) : (
+        <ImageTabslist data={images as PhotoProps[]} />
+      )}
     </>
   );
 }

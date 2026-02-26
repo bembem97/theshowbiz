@@ -24,7 +24,9 @@ export default function BackdropTrailer({
       <ImageLink
         alt={title}
         src={backdrop_path}
-        href={`/${media_type}/${id}/imageviewer/${pathname}` as Route}
+        href={
+          `/${media_type}/${id}${pathname === "backdrop.png" ? "/images" : `/imageviewer${pathname}`}` as Route
+        }
       />
     );
 
