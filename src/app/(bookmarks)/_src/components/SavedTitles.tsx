@@ -8,7 +8,6 @@ import {
   ListItemText,
 } from "@/components/ui/list";
 import { cn } from "@/lib/utils";
-import { ChevronRightIcon } from "lucide-react";
 import { Route } from "next";
 import Link from "next/link";
 import React from "react";
@@ -78,25 +77,6 @@ export default function SavedTitles({
               </div>
             </ListItemText>
           </ListItemButton>
-          {/* <div className="w-full">
-              {content && (
-                <div className="px-2 pb-4">
-                  <h6 className="sr-only">Your comment</h6>
-                  <p className="text-muted-foreground line-clamp-4 text-sm">
-                    {content}
-                  </p>
-                  <Link
-                    className="text-muted-foreground hover:text-foreground 3xl:ml-0 ml-auto flex w-max items-center text-xs hover:underline"
-                    href={
-                      `/reviews/${mediaType.toLowerCase() as "movie" | "tv"}/${titleId}` as Route
-                    }
-                  >
-                    Read Review
-                    <ChevronRightIcon className="text-primary size-4" />
-                  </Link>
-                </div>
-              )}
-            </div> */}
         </ListItem>
       ))}
     </List>

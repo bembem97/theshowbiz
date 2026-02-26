@@ -1,9 +1,13 @@
 import Reviews from "../_src/components/reviews/Reviews";
 
-export default function ReviewsPage() {
+export type ReviewSearchParamProps = Promise<{
+  [key: string]: string | string[] | undefined;
+}>;
+
+export default function ReviewsPage({ searchParams }: PageProps<"/reviews">) {
   return (
     <>
-      <Reviews />
+      <Reviews searchParams={searchParams} />
     </>
   );
 }
