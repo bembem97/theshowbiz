@@ -1,4 +1,4 @@
-import { cacheTag } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import prisma, { Prisma } from "@/lib/prisma";
 import { getNumberCompact } from "@/lib/utils";
 import { DeleteRatingProps, TitleRatingDataProps } from "../../types/my-rating";
@@ -42,6 +42,7 @@ export async function getTitleAverageScore({
 }: Omit<TitleRatingDataProps, "voteCount">) {
   "use cache";
   cacheTag(`${mediaType}:${titleId}`);
+  cacheLife("days");
 
   try {
     const calcRating = await prisma.titleInteraction.aggregate({
@@ -100,6 +101,7 @@ export async function getTotalUserVote({
 }: Omit<TitleRatingDataProps, "voteAverage">) {
   "use cache";
   cacheTag(`${mediaType}:${titleId}`);
+  cacheLife("days");
 
   try {
     const calcRating = await prisma.titleInteraction.aggregate({

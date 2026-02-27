@@ -8,6 +8,7 @@ export async function getReviews({
   titleId,
 }: Omit<GetTitleAndTypeProps, "commentId">) {
   const MEDIA_TYPE = mediaType.toUpperCase() as "MOVIE" | "TV";
+
   try {
     const result = await prisma.review.findMany({
       where: {
@@ -18,6 +19,11 @@ export async function getReviews({
         createdAt: "desc",
       },
       select: {
+        titleInteraction: {
+          select: {
+            rating: true,
+          },
+        },
         content: true,
         createdAt: true,
         id: true,
@@ -27,24 +33,32 @@ export async function getReviews({
             userId: true,
           },
         },
-        reaction: {
-          select: {
-            helpful: true,
-            profileId: true,
-            profile: { select: { userId: true } },
-          },
-        },
+        // reaction: {
+        //   select: {
+        //     helpful: true,
+        //     profileId: true,
+        //     profile: { select: { userId: true } },
+        //   },
+        // },
       },
     });
 
     const data = result.map(
-      ({ content, createdAt, id, profile, reaction }) => ({
+      ({
+        content,
+        createdAt,
+        id,
+        profile,
+        // reaction,
+        titleInteraction: ti,
+      }) => ({
         content,
         createdAt,
         id,
         username: profile.username,
         dbUserId: profile.userId,
-        reaction,
+        rating: ti?.rating,
+        // reaction,
       }),
     );
 

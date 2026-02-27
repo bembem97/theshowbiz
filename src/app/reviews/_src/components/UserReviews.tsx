@@ -21,6 +21,7 @@ import {
 } from "./action";
 import { GetTitleAndTypeProps } from "../types";
 import { cn } from "@/lib/utils";
+import { ScoreBadge } from "@/components/custom/Badge";
 
 export default async function UserReviews({
   mediaType,
@@ -41,7 +42,7 @@ export default async function UserReviews({
         </div>
       ) : (
         reviews.map(
-          async ({ content, createdAt, id, username, dbUserId, reaction }) => {
+          async ({ content, createdAt, id, username, dbUserId, rating }) => {
             const posRev = await getPositiveReactions({ reviewId: id });
             const negRev = await getNegativeReactions({ reviewId: id });
             const isActivePos = await getMyReaction({
@@ -55,11 +56,7 @@ export default async function UserReviews({
               isHelpful: false,
             });
 
-            const isActiveReaction = () => {
-              return reaction.find(
-                ({ profile: { userId } }) => userId === sessionUserId,
-              );
-            };
+            const isUserReacted = dbUserId === sessionUserId;
 
             return (
               <Item
@@ -69,7 +66,7 @@ export default async function UserReviews({
                 className="gap-0 border-b p-0"
               >
                 <ItemHeader className="p-2 pb-1">
-                  <header className="text-muted-foreground flex items-start gap-x-1.5 gap-y-1">
+                  <header className="text-muted-foreground flex flex-wrap items-center gap-x-1.5 gap-y-1">
                     <cite className="text-xs font-semibold not-italic">
                       {username}
                     </cite>
@@ -80,6 +77,11 @@ export default async function UserReviews({
                         includeSeconds: true,
                       })}
                     </time>
+                    {rating && <span className="text-xs">&bull;</span>}
+                    <ScoreBadge
+                      value={rating}
+                      className="border-none p-0 text-xs leading-0 text-inherit dark:text-inherit"
+                    />
                   </header>
                 </ItemHeader>
 
@@ -97,8 +99,7 @@ export default async function UserReviews({
                         reviewId={id}
                         userId={sessionUserId}
                         className={cn({
-                          "text-primary":
-                            isActivePos === true && isActiveReaction(),
+                          "text-primary": isActivePos === true && isUserReacted,
                         })}
                       />
                       <span className="text-xs">{posRev.count} Helpful</span>
@@ -113,7 +114,7 @@ export default async function UserReviews({
                         userId={sessionUserId}
                         className={cn({
                           "text-primary":
-                            isActiveNeg === false && isActiveReaction(),
+                            isActiveNeg === false && isUserReacted,
                         })}
                       />
                       <span className="text-xs">

@@ -12,16 +12,21 @@ export default async function TitleRatingData({
   voteAverage,
   voteCount,
 }: TitleRatingDataProps) {
-  const averageScore = await getTitleAverageScore({
+  const averageScoreAwait = getTitleAverageScore({
     titleId,
     mediaType,
     voteAverage,
   });
-  const userCount = await getTotalUserVote({
+  const userCountAwait = getTotalUserVote({
     titleId,
     mediaType,
     voteCount,
   });
+
+  const [averageScore, userCount] = await Promise.all([
+    averageScoreAwait,
+    userCountAwait,
+  ]);
 
   const avgScr =
     averageScore.success === true && averageScore.data

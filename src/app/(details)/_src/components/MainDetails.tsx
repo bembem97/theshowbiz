@@ -74,12 +74,12 @@ export default async function MainDetails({
               <Item
                 variant="outline"
                 className={cn(
-                  "pointer-events-none absolute top-1/2 left-1/2 z-10 size-max -translate-x-1/2 -translate-y-1/2 rounded-full backdrop-blur-xs",
+                  "pointer-events-none absolute top-1/2 left-1/2 z-10 size-max -translate-x-1/2 -translate-y-1/2 rounded-full border-white/80 backdrop-blur-xs",
                   { hidden: !trailer || Object.keys(trailer).length === 0 },
                 )}
               >
                 <ItemActions>
-                  <PlayIcon className="text-border size-9" />
+                  <PlayIcon className="size-9 text-white/80" />
                 </ItemActions>
                 <ItemDescription className="sr-only">
                   play trailer

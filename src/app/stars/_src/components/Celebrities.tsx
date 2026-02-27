@@ -28,9 +28,12 @@ export default async function Celebrities({
 
   return (
     <>
-      <div className="@container flex flex-wrap justify-items-center gap-y-4 px-1.5">
+      <div className="@container/grid flex flex-wrap justify-items-center gap-y-4 px-1.5">
         {stars.map((v) => (
-          <div key={v.id} className="shrink-0 grow-0 basis-1/5 p-1">
+          <div
+            key={v.id}
+            className="shrink-0 grow-0 basis-1/2 p-1 @md/grid:basis-1/3 @2xl/grid:basis-1/4 @4xl/grid:basis-1/5"
+          >
             <PersonDetailsPoster data={v} />
           </div>
         ))}

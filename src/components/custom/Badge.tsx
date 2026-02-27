@@ -69,16 +69,7 @@ export function ScoreBadge({ value, className, children, ...props }: Props) {
     >
       <StarIcon className="text-yellow-600 dark:text-yellow-400" />
 
-      {children && !value ? (
-        children
-      ) : (
-        <>
-          <span className="text-xs leading-none text-black dark:text-white">
-            {value}
-          </span>
-          /10
-        </>
-      )}
+      {children && !value ? children : <>{value}/10</>}
     </Badge>
   );
 }
