@@ -20,7 +20,7 @@ export default async function getCreditsAPI(starId: string) {
     id: r.id,
     profile: {
       src: getImagePathname(r.profile_path, "poster"),
-      href: `/person/${r.id}/profile${r.profile_path || ""}` as Route,
+      href: `/person/${r.id}/${r.profile_path ? `profile${r.profile_path}` : "photos"}` as Route,
     },
     bio: r.biography,
     knownForDept: r.known_for_department,

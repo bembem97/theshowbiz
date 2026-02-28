@@ -60,7 +60,7 @@ export function HeroContent({
       <p className="typography-h1 dark:text-foreground text-left text-white">
         {title}
       </p>
-      <div className="flex items-center gap-x-2 *:data-[slot=badge]:text-white">
+      <div className="flex items-center gap-x-2 *:data-[slot=badge]:text-white dark:*:data-[slot=badge]:text-white">
         <MediaTypeBadge value={media_type} />
         <DateBadge value={release_date} />
         <DynamicScore
@@ -68,11 +68,10 @@ export function HeroContent({
           mediaType={media_type}
           titleId={id}
         />
-        {/* <ScoreBadge value={vote_average} /> */}
       </div>
       <div className="flex items-center gap-x-2">
         <ButtonTrailer
-          className="dark:data-[slot=trailer-button]:text-foreground data-[slot=trailer-button]:text-white"
+          className="data-[slot=trailer-button]:text-white dark:data-[slot=trailer-button]:text-white"
           media_type={media_type}
           titleId={id}
           trailer={trailer}

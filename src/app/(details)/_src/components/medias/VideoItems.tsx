@@ -24,8 +24,10 @@ export default async function VideoItems({
 
   const thumbnails = images as VideoCollectionProps[];
 
-  if (thumbnails.length === 0) {
-    return <p>{"No available video."}</p>;
+  if (!thumbnails || thumbnails.length === 0) {
+    return (
+      <p className="text-muted-foreground italic">{"No available video."}</p>
+    );
   }
 
   return (

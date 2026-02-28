@@ -22,8 +22,8 @@ export default async function ImageItems({
 
   return (
     <>
-      {images.length === 0 ? (
-        <p>{"No available image."}</p>
+      {!images || images.length === 0 ? (
+        <p className="text-muted-foreground italic">{"No available image."}</p>
       ) : (
         <ImageTabslist data={images as PhotoProps[]} />
       )}
