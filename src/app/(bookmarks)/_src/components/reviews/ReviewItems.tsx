@@ -15,7 +15,6 @@ export type SavedTitleProps = {
   title: string;
   year: number | null;
   pathname: string | null;
-  rating: number | null;
 };
 
 const linkClassnames = cva(

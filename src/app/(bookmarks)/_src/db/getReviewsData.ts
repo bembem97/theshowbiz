@@ -21,11 +21,9 @@ export async function getReviewsData({ userId }: UserIdProps) {
           select: {
             helpful: true,
             review: {
-              select: {
-                content: true,
+              include: {
                 titleInteraction: {
                   select: {
-                    rating: true,
                     mediaType: true,
                     pathname: true,
                     title: true,
@@ -46,7 +44,6 @@ export async function getReviewsData({ userId }: UserIdProps) {
             content: true,
             titleInteraction: {
               select: {
-                rating: true,
                 mediaType: true,
                 pathname: true,
                 title: true,
@@ -65,14 +62,13 @@ export async function getReviewsData({ userId }: UserIdProps) {
 
     const myReviews = review.map(({ content, titleInteraction: ti }) => {
       if (ti) {
-        const { mediaType, pathname, rating, title, titleId, year } = ti;
+        const { mediaType, pathname, title, titleId, year } = ti;
         const MEDIA_TYPE = mediaType.toLowerCase() as "movie" | "tv";
 
         const res: Omit<SavedTitleProps, "helpful"> = {
           content,
           mediaType: MEDIA_TYPE,
           pathname,
-          rating,
           title,
           titleId,
           year,
@@ -87,7 +83,7 @@ export async function getReviewsData({ userId }: UserIdProps) {
     const myReactions = reaction.map(
       ({ helpful, review: { content, titleInteraction: ti } }) => {
         if (ti) {
-          const { mediaType, pathname, rating, title, titleId, year } = ti;
+          const { mediaType, pathname, title, titleId, year } = ti;
           const MEDIA_TYPE = mediaType.toLowerCase() as "movie" | "tv";
 
           const res: SavedTitleProps = {
@@ -95,7 +91,6 @@ export async function getReviewsData({ userId }: UserIdProps) {
             helpful,
             mediaType: MEDIA_TYPE,
             pathname,
-            rating,
             title,
             titleId,
             year,

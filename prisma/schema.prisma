@@ -30,9 +30,6 @@ model Reaction {
   reviewId String
   review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 
-  // userId String
-  // user   User   @relation(fields: [userId], references: [id])
-
   profileId String
   profile   Profile @relation(fields: [profileId], references: [id])
 

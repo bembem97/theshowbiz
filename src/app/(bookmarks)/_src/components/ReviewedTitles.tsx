@@ -40,16 +40,8 @@ export default function ReviewedTitles({
       {data.map((props, i) => {
         if (!props) return null;
 
-        const {
-          content,
-          helpful,
-          mediaType,
-          pathname,
-          rating,
-          title,
-          titleId,
-          year,
-        } = props;
+        const { content, helpful, mediaType, pathname, title, titleId, year } =
+          props;
 
         return (
           <ListItem
@@ -73,14 +65,14 @@ export default function ReviewedTitles({
                 <h2 className="typography-h4 line-clamp-1 text-sm">{title}</h2>
                 <div className="flex items-center gap-x-1">
                   <DateBadge value={year} className="px-0" />
-                  <ScoreBadge
+                  {/* <ScoreBadge
                     value={rating ? `Your score: ${rating}` : null}
                     className="px-0"
                   >
                     {!Boolean(rating) ? (
                       <span className="text-xs">Not rated</span>
                     ) : null}
-                  </ScoreBadge>
+                  </ScoreBadge> */}
 
                   {typeof helpful !== "boolean" ? null : (
                     <Badge variant="ghost">
