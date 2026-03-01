@@ -8,7 +8,6 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import Form from "next/form";
 import React, { useId } from "react";
 import { createComment } from "../db/cud";
@@ -16,6 +15,7 @@ import { GetReviewTitleProps } from "../types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import SignInLink from "@/module/auth/SignInLink";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function CommentInput({
   mediaType,
@@ -50,12 +50,13 @@ export default function CommentInput({
           <FieldLabel className="sr-only" htmlFor={`comment-${commentId}`}>
             Your comment
           </FieldLabel>
-          <Input
+          <Textarea
             onChange={(e) => setInput(e.target.value)}
             id={`comment-${commentId}`}
             placeholder="Leave a review..."
             required
             className="h-12"
+            disabled={isPending}
           />
         </Field>
 
