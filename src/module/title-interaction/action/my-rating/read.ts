@@ -42,7 +42,7 @@ export async function getTitleAverageScore({
 }: Omit<TitleRatingDataProps, "voteCount">) {
   "use cache";
   cacheTag(`${mediaType}:${titleId}`);
-  cacheLife("days");
+  cacheLife("weeks");
 
   try {
     const calcRating = await prisma.titleInteraction.aggregate({
@@ -101,7 +101,7 @@ export async function getTotalUserVote({
 }: Omit<TitleRatingDataProps, "voteAverage">) {
   "use cache";
   cacheTag(`${mediaType}:${titleId}`);
-  cacheLife("days");
+  cacheLife("weeks");
 
   try {
     const calcRating = await prisma.titleInteraction.aggregate({

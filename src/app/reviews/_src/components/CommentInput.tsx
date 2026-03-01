@@ -55,7 +55,7 @@ export default function CommentInput({
             id={`comment-${commentId}`}
             placeholder="Leave a review..."
             required
-            className="h-12"
+            className="min-h-24"
             disabled={isPending}
           />
         </Field>
