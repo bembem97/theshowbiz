@@ -21,6 +21,13 @@ export async function getReviewsData({ userId }: UserIdProps) {
           select: {
             helpful: true,
             review: {
+              omit: {
+                createdAt: true,
+                id: true,
+                mediaType: true,
+                profileId: true,
+                titleId: true,
+              },
               include: {
                 titleInteraction: {
                   select: {
