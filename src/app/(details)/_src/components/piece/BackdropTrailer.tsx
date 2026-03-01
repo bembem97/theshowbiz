@@ -25,7 +25,7 @@ export default function BackdropTrailer({
         alt={title}
         src={backdrop_path}
         href={
-          `/${media_type}/${id}${pathname === "backdrop.png" ? "/images" : `/imageviewer${pathname}`}` as Route
+          `/${media_type}/${id}${pathname === "backdrop.png" ? "/images" : `/imageviewer/${pathname}`}` as Route
         }
       />
     );
